@@ -6,10 +6,10 @@ export async function onRequestPost(context) {
   };
 
   try {
-    const { query, style, factors } = await context.request.json();
+    const { messages, market, style, factors, isFirst } = await context.request.json();
 
-    if (!query || !query.trim()) {
-      return new Response(JSON.stringify({ error: '분석할 내용을 입력해주세요.' }), {
+    if (!messages || !messages.length) {
+      return new Response(JSON.stringify({ error: '메시지가 없습니다.' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
@@ -20,19 +20,21 @@ export async function onRequestPost(context) {
       timeZone: 'Asia/Seoul',
     });
 
+    const marketMap = {
+      us: '미국 주식시장 (나스닥, S&P500)',
+      kr: '한국 주식시장 (코스피, 코스닥)',
+      global: '글로벌 주식시장 (미국, 유럽, 아시아 포함)',
+    };
+
     const styleMap = {
       both: '장기투자와 단타/스윙 모두 고려하여 상황에 맞게',
       long: '장기투자 위주 (3개월~수년 보유)',
       swing: '스윙/단타 위주 (수일~수주 보유)',
     };
 
-    const systemPrompt = `사용자의 지적 스파링 파트너가 되어 줘. 사용자가 전제로 하는 모든 가정을 재검토하고 가정의 타당성을 확인해. 사용자 기분 고려하지 말고 팩트, 논리, 실현 가능성 데이터를 기반으로 냉정하게 답변해 줘.
+    const scoreInstruction = isFirst ? `
 
-당신은 월스트리트 출신 헤지펀드 매니저이자 퀀트 애널리스트입니다.
-미국 주식시장(나스닥, S&P500)을 전문으로 분석합니다.
-오늘 날짜: ${today}
-
-분석할 때 반드시 다음 구조로 답변하세요:
+첫 번째 분석이므로 반드시 다음 구조로 답변하세요:
 
 [SCORES]
 시장_위험도: (0-100, 숫자만)
@@ -57,18 +59,27 @@ export async function onRequestPost(context) {
 
 ## 주요 리스크
 (반드시 알아야 할 하방 리스크 — 낙관적 시나리오의 반론도 포함)
-[/분석]
+[/분석]` : `
+
+후속 대화이므로 [SCORES] 태그 없이 자연스럽게 대화체로 답변하세요.
+이전 분석 맥락을 이어서, 사용자의 추가 질문에 깊이 있게 답변하세요.`;
+
+    const systemPrompt = `사용자의 지적 스파링 파트너가 되어 줘. 사용자가 전제로 하는 모든 가정을 재검토하고 가정의 타당성을 확인해. 사용자 기분 고려하지 말고 팩트, 논리, 실현 가능성 데이터를 기반으로 냉정하게 답변해 줘.
+
+당신은 월스트리트 출신 헤지펀드 매니저이자 퀀트 애널리스트입니다.
+목표 시장: ${marketMap[market] || marketMap.us}
+투자 스타일: ${styleMap[style] || styleMap.both}
+분석 요소: ${factors || '지정학, 거시경제, 펀더멘탈, 시장센티먼트, 기술적분석'}
+오늘 날짜: ${today}
+${scoreInstruction}
 
 중요: 사용자가 특정 종목에 대해 낙관적이더라도, 데이터가 뒷받침하지 않으면 냉정하게 반박하세요.
 웹 검색으로 최신 정보를 최대한 활용하고, 추측이 아닌 근거 기반으로 분석하세요.`;
 
-    const userMsg = `사용자 요청: ${query}
-
-투자 스타일: ${styleMap[style] || styleMap.both}
-분석 요소: ${factors || '지정학, 거시경제, 펀더멘탈, 시장센티먼트, 기술적분석'}
-
-최신 뉴스와 시장 데이터를 검색하여 신중하고 깊이 있는 분석을 제공해주세요.
-사용자의 가정에 문제가 있다면 반드시 지적하세요.`;
+    // Build messages for API (only user/assistant roles)
+    const apiMessages = messages
+      .filter(m => m.role === 'user' || m.role === 'assistant')
+      .map(m => ({ role: m.role, content: m.content }));
 
     // Try Anthropic first
     let result = null;
@@ -89,7 +100,7 @@ export async function onRequestPost(context) {
             max_tokens: 4000,
             system: systemPrompt,
             tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 5 }],
-            messages: [{ role: 'user', content: userMsg }],
+            messages: apiMessages,
           }),
         });
 
@@ -133,7 +144,7 @@ export async function onRequestPost(context) {
             max_tokens: 4000,
             messages: [
               { role: 'system', content: systemPrompt },
-              { role: 'user', content: userMsg },
+              ...apiMessages,
             ],
           }),
         });
@@ -146,8 +157,7 @@ export async function onRequestPost(context) {
         }
 
         if (!result) {
-          const errData = await openaiRes.text();
-          return new Response(JSON.stringify({ error: 'AI 응답 실패', detail: errData }), {
+          return new Response(JSON.stringify({ error: 'AI 응답 실패' }), {
             status: 502,
             headers: { 'Content-Type': 'application/json', ...corsHeaders },
           });

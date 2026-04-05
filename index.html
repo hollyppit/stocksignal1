@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>SIGNAL — AI 주식 분석</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -27,15 +27,14 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
+  html, body {
+    height: 100%;
     background: var(--bg);
     color: var(--text);
     font-family: var(--kr);
-    min-height: 100vh;
-    overflow-x: hidden;
+    overflow: hidden;
   }
 
-  /* Grid bg */
   body::before {
     content: '';
     position: fixed;
@@ -48,49 +47,32 @@
     z-index: 0;
   }
 
-  /* Glow orbs */
-  body::after {
-    content: '';
-    position: fixed;
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%);
-    top: -200px; left: -200px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .glow-orb2 {
-    position: fixed;
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(0,255,136,0.04) 0%, transparent 70%);
-    bottom: -200px; right: -100px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .container {
+  .app {
     position: relative;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
     max-width: 900px;
     margin: 0 auto;
-    padding: 0 20px 60px;
   }
 
-  /* Header */
+  /* ── Header ── */
   header {
-    padding: 36px 0 28px;
+    padding: 16px 20px;
     border-bottom: 1px solid var(--border);
-    margin-bottom: 40px;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
+    flex-shrink: 0;
   }
 
   .logo-mark {
-    width: 44px; height: 44px;
+    width: 36px; height: 36px;
     border: 2px solid var(--accent);
     display: flex; align-items: center; justify-content: center;
     position: relative;
+    flex-shrink: 0;
   }
   .logo-mark::before {
     content: '';
@@ -103,90 +85,81 @@
 
   .logo-text {
     font-family: var(--sans);
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 800;
     letter-spacing: 0.2em;
     color: var(--text-bright);
   }
   .logo-sub {
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 9px;
     color: var(--accent);
-    letter-spacing: 0.15em;
-    margin-top: 2px;
+    letter-spacing: 0.12em;
   }
 
-  .header-badge {
+  .header-right {
     margin-left: auto;
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--accent2);
-    border: 1px solid var(--accent2);
-    padding: 4px 10px;
-    letter-spacing: 0.1em;
-    opacity: 0.8;
-  }
-
-  /* Input section */
-  .input-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 28px;
-    margin-bottom: 24px;
-    position: relative;
-  }
-  .input-section::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2), transparent);
-  }
-
-  .section-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--accent);
-    margin-bottom: 16px;
-    text-transform: uppercase;
-  }
-
-  .query-input {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text-bright);
-    font-family: var(--kr);
-    font-size: 15px;
-    padding: 14px 16px;
-    resize: none;
-    outline: none;
-    transition: border-color 0.2s;
-    line-height: 1.6;
-    min-height: 100px;
-  }
-  .query-input::placeholder { color: var(--text-dim); font-size: 13px; }
-  .query-input:focus { border-color: var(--accent); }
-
-  /* Filter pills */
-  .filter-row {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     gap: 8px;
-    margin: 16px 0;
+  }
+  .new-chat-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+  }
+  .new-chat-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ── Options Bar ── */
+  .options-bar {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .options-bar::-webkit-scrollbar { display: none; }
+
+  .opt-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .opt-group:last-child { margin-bottom: 0; }
+
+  .opt-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    min-width: 52px;
+    flex-shrink: 0;
   }
 
   .pill {
     font-family: var(--mono);
-    font-size: 11px;
-    padding: 6px 14px;
+    font-size: 10px;
+    padding: 4px 10px;
     border: 1px solid var(--border);
     color: var(--text-dim);
     cursor: pointer;
     transition: all 0.15s;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.03em;
     user-select: none;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .pill:hover { border-color: var(--accent); color: var(--accent); }
   .pill.active {
@@ -200,96 +173,129 @@
     color: var(--accent2);
   }
 
-  /* Analyze button */
-  .analyze-btn {
-    width: 100%;
-    background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,255,136,0.08));
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    font-family: var(--sans);
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    padding: 16px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-transform: uppercase;
-    margin-top: 8px;
-    position: relative;
-    overflow: hidden;
-  }
-  .analyze-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, rgba(0,212,255,0.25), rgba(0,255,136,0.15));
-    box-shadow: 0 0 30px rgba(0,212,255,0.2);
-  }
-  .analyze-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  /* Progress */
-  .progress-section {
-    display: none;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 24px 28px;
-    margin-bottom: 24px;
-  }
-
-  .progress-steps {
+  /* ── Chat Area ── */
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
   }
 
-  .step {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-family: var(--mono);
-    font-size: 12px;
+  .chat-area::-webkit-scrollbar { width: 3px; }
+  .chat-area::-webkit-scrollbar-track { background: transparent; }
+  .chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Welcome */
+  .welcome {
+    text-align: center;
+    padding: 60px 20px;
     color: var(--text-dim);
-    transition: color 0.3s;
   }
-  .step.active { color: var(--accent); }
-  .step.done { color: var(--accent2); }
+  .welcome-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+  }
+  .welcome h2 {
+    font-family: var(--sans);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+  .welcome p {
+    font-size: 13px;
+    line-height: 1.7;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .welcome-hints {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  .hint-chip {
+    font-size: 12px;
+    padding: 8px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+    max-width: 280px;
+    text-align: left;
+    line-height: 1.4;
+  }
+  .hint-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
 
-  .step-dot {
-    width: 8px; height: 8px;
-    border: 1px solid currentColor;
-    flex-shrink: 0;
+  /* Messages */
+  .msg { display: flex; gap: 10px; animation: fadeUp 0.3s ease; }
+  .msg.user { justify-content: flex-end; }
+  .msg.ai { justify-content: flex-start; }
+
+  .msg-bubble {
+    max-width: 80%;
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .msg.user .msg-bubble {
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.25);
+    color: var(--text-bright);
+    border-radius: 2px;
+  }
+
+  .msg.ai .msg-bubble {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 2px;
     position: relative;
   }
-  .step.active .step-dot::after {
-    content: '';
-    position: absolute;
-    inset: 2px;
+
+  .msg.ai .provider-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .msg.ai .provider-tag .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
     background: var(--accent);
-    animation: blink 0.8s infinite;
   }
-  .step.done .step-dot {
-    background: var(--accent2);
-    border-color: var(--accent2);
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .msg.ai .provider-tag.fallback .dot { background: var(--accent3); }
 
-  /* Result section */
-  .result-section {
-    display: none;
-  }
-
-  /* Score card */
+  /* Score cards inside chat */
   .score-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  @media (min-width: 600px) {
+    .score-grid { grid-template-columns: repeat(4, 1fr); }
   }
 
   .score-card {
-    background: var(--surface);
+    background: var(--bg);
     border: 1px solid var(--border);
-    padding: 18px;
+    padding: 10px;
     position: relative;
     overflow: hidden;
   }
@@ -305,15 +311,15 @@
 
   .score-label {
     font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.2em;
+    font-size: 8px;
+    letter-spacing: 0.15em;
     color: var(--text-dim);
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     text-transform: uppercase;
   }
   .score-value {
     font-family: var(--sans);
-    font-size: 28px;
+    font-size: 20px;
     font-weight: 800;
     line-height: 1;
   }
@@ -323,113 +329,114 @@
 
   .score-sub {
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 9px;
     color: var(--text-dim);
-    margin-top: 4px;
+    margin-top: 3px;
   }
 
-  /* Main result box */
-  .result-box {
+  /* Typing indicator */
+  .typing { display: flex; gap: 10px; align-items: flex-start; }
+  .typing .dots {
+    display: flex;
+    gap: 4px;
+    padding: 14px 18px;
     background: var(--surface);
     border: 1px solid var(--border);
-    padding: 28px;
-    margin-bottom: 16px;
-    position: relative;
   }
-  .result-box::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
+  .typing .dots span {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: dotPulse 1.2s infinite;
   }
-  .result-box.main::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
-  .result-box.warn::before { background: var(--warn); }
-  .result-box.danger::before { background: var(--red); }
+  .typing .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing .dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dotPulse {
+    0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
+    30% { opacity: 1; transform: scale(1); }
+  }
 
-  .result-title {
+  /* ── Input Bar ── */
+  .input-bar-wrap {
+    flex-shrink: 0;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .disclaimer-line {
     font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
+    font-size: 9px;
+    color: var(--text-dim);
+    text-align: center;
+    padding: 6px 20px 0;
+    opacity: 0.7;
+  }
+  .input-bar {
+    display: flex;
+    gap: 8px;
+    padding: 12px 20px 14px;
+    align-items: flex-end;
+  }
+  .chat-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-bright);
+    font-family: var(--kr);
+    font-size: 14px;
+    padding: 10px 14px;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.5;
+    max-height: 120px;
+    min-height: 42px;
+  }
+  .chat-input::placeholder { color: var(--text-dim); font-size: 13px; }
+  .chat-input:focus { border-color: var(--accent); }
+
+  .send-btn {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,255,136,0.1));
+    border: 1px solid var(--accent);
     color: var(--accent);
-    margin-bottom: 16px;
-    text-transform: uppercase;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
   }
-  .result-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
+  .send-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(0,212,255,0.35), rgba(0,255,136,0.2));
+    box-shadow: 0 0 20px rgba(0,212,255,0.2);
   }
+  .send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .send-btn svg { width: 18px; height: 18px; }
 
-  .result-content {
-    font-size: 14px;
-    line-height: 1.85;
-    color: var(--text);
-    white-space: pre-wrap;
-  }
-
-  /* Ticker highlight */
-  .ticker {
-    font-family: var(--mono);
-    background: rgba(0,212,255,0.1);
-    border: 1px solid rgba(0,212,255,0.3);
-    color: var(--accent);
-    padding: 1px 6px;
-    font-size: 12px;
-  }
-
-  /* Disclaimer */
-  .disclaimer {
-    margin-top: 24px;
-    padding: 14px 18px;
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--warn);
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--text-dim);
-    line-height: 1.7;
-  }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border); }
-
-  /* Fade in */
+  /* Animations */
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .fade-in { animation: fadeUp 0.4s ease forwards; }
 
-  /* Stream cursor */
-  .cursor {
-    display: inline-block;
-    width: 2px; height: 14px;
-    background: var(--accent);
-    animation: blink 0.8s infinite;
-    vertical-align: middle;
-    margin-left: 2px;
-  }
-
-  /* Separator */
-  .sep {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 24px 0;
+  /* Mobile */
+  @media (max-width: 600px) {
+    header { padding: 12px 16px; }
+    .options-bar { padding: 10px 16px; }
+    .chat-area { padding: 16px; }
+    .input-bar { padding: 10px 16px 12px; }
+    .msg-bubble { max-width: 90%; font-size: 13px; }
+    .welcome { padding: 40px 16px; }
+    .welcome h2 { font-size: 17px; }
   }
 </style>
 </head>
 <body>
-<div class="glow-orb2"></div>
-
-<div class="container">
+<div class="app">
+  <!-- Header -->
   <header>
     <div class="logo-mark">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
         <polyline points="2,14 6,8 10,11 14,5 18,7" stroke="#00d4ff" stroke-width="1.5" fill="none"/>
         <circle cx="18" cy="7" r="2" fill="#00d4ff"/>
       </svg>
@@ -438,222 +445,319 @@
       <div class="logo-text">SIGNAL</div>
       <div class="logo-sub">AI MARKET INTELLIGENCE</div>
     </div>
-    <div class="header-badge">NASDAQ / S&P500</div>
+    <div class="header-right">
+      <button class="new-chat-btn" onclick="resetChat()">+ NEW</button>
+    </div>
   </header>
 
-  <div class="input-section">
-    <div class="section-label">// 분석 요청</div>
-    <textarea class="query-input" id="queryInput" placeholder="예시: &quot;반도체 섹터에서 지금 가장 매력적인 종목 추천해줘&quot;&#10;&quot;엔비디아 지금 들어가도 돼?&quot;&#10;&quot;AI 관련주 중 장기투자 가능한 종목 3개 골라줘&quot;&#10;&quot;무역전쟁 리스크 고려해서 방어적인 포트폴리오 짜줘&quot;" rows="4"></textarea>
-
-    <div class="filter-row">
-      <span class="pill active" id="pill-both" onclick="setPill('both')">전략 자동선택</span>
-      <span class="pill" id="pill-long" onclick="setPill('long')">장기투자</span>
-      <span class="pill" id="pill-swing" onclick="setPill('swing')">스윙/단타</span>
+  <!-- Options Bar -->
+  <div class="options-bar">
+    <div class="opt-group">
+      <span class="opt-label">Market</span>
+      <span class="pill active" data-group="market" data-val="us" onclick="setOpt('market',this)">US</span>
+      <span class="pill" data-group="market" data-val="kr" onclick="setOpt('market',this)">KR</span>
+      <span class="pill" data-group="market" data-val="global" onclick="setOpt('market',this)">Global</span>
     </div>
-
-    <div class="filter-row">
-      <span class="pill active-green" id="pill-geo" onclick="togglePill('geo')">지정학 리스크</span>
-      <span class="pill active-green" id="pill-macro" onclick="togglePill('macro')">거시경제</span>
-      <span class="pill active-green" id="pill-fundamental" onclick="togglePill('fundamental')">펀더멘탈</span>
-      <span class="pill active-green" id="pill-sentiment" onclick="togglePill('sentiment')">시장 센티먼트</span>
-      <span class="pill active-green" id="pill-technical" onclick="togglePill('technical')">기술적 분석</span>
+    <div class="opt-group">
+      <span class="opt-label">Style</span>
+      <span class="pill active" data-group="style" data-val="both" onclick="setOpt('style',this)">Auto</span>
+      <span class="pill" data-group="style" data-val="long" onclick="setOpt('style',this)">Long-term</span>
+      <span class="pill" data-group="style" data-val="swing" onclick="setOpt('style',this)">Swing</span>
     </div>
-
-    <button class="analyze-btn" id="analyzeBtn" onclick="startAnalysis()">
-      ▶ SIGNAL 분석 시작
-    </button>
-  </div>
-
-  <!-- Progress -->
-  <div class="progress-section" id="progressSection">
-    <div class="section-label">// 분석 진행중</div>
-    <div class="progress-steps" id="progressSteps">
-      <div class="step" id="step1"><div class="step-dot"></div><span>최신 시장 뉴스 및 데이터 수집</span></div>
-      <div class="step" id="step2"><div class="step-dot"></div><span>지정학·매크로 리스크 평가</span></div>
-      <div class="step" id="step3"><div class="step-dot"></div><span>섹터 및 종목 펀더멘탈 분석</span></div>
-      <div class="step" id="step4"><div class="step-dot"></div><span>기술적 지표 및 센티먼트 검토</span></div>
-      <div class="step" id="step5"><div class="step-dot"></div><span>매수 타이밍 및 전략 종합</span></div>
+    <div class="opt-group">
+      <span class="opt-label">Focus</span>
+      <span class="pill active-green" data-factor="geo" onclick="toggleFactor(this)">Geopolitics</span>
+      <span class="pill active-green" data-factor="macro" onclick="toggleFactor(this)">Macro</span>
+      <span class="pill active-green" data-factor="fundamental" onclick="toggleFactor(this)">Fundamental</span>
+      <span class="pill active-green" data-factor="sentiment" onclick="toggleFactor(this)">Sentiment</span>
+      <span class="pill active-green" data-factor="technical" onclick="toggleFactor(this)">Technical</span>
     </div>
   </div>
 
-  <!-- Result -->
-  <div class="result-section" id="resultSection">
-    <div class="score-grid" id="scoreGrid"></div>
-    <div class="result-box main" id="mainResult">
-      <div class="result-title">종합 분석 결과</div>
-      <div class="result-content" id="mainResultContent"></div>
+  <!-- Chat Area -->
+  <div class="chat-area" id="chatArea">
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">
+        <svg width="48" height="48" viewBox="0 0 20 20" fill="none" style="opacity:0.5">
+          <polyline points="2,14 6,8 10,11 14,5 18,7" stroke="#00d4ff" stroke-width="1" fill="none"/>
+          <circle cx="18" cy="7" r="1.5" fill="#00d4ff"/>
+        </svg>
+      </div>
+      <h2>SIGNAL AI</h2>
+      <p>옵션을 설정하고 질문하세요. 냉정한 팩트 기반 분석으로 당신의 투자 가정을 검증합니다.</p>
+      <div class="welcome-hints">
+        <div class="hint-chip" onclick="useHint(this)">반도체 섹터에서 지금 매력적인 종목 추천해줘</div>
+        <div class="hint-chip" onclick="useHint(this)">엔비디아 지금 들어가도 돼?</div>
+        <div class="hint-chip" onclick="useHint(this)">무역전쟁 리스크 고려해서 방어적 포트폴리오 짜줘</div>
+        <div class="hint-chip" onclick="useHint(this)">AI 관련주 장기투자 종목 3개 골라줘</div>
+      </div>
     </div>
-    <div class="disclaimer">
-      ⚠ 본 분석은 AI가 공개된 정보를 기반으로 생성한 참고자료입니다. 투자 결정은 반드시 본인의 판단과 책임 하에 이루어져야 하며, 이 내용은 투자 권유가 아닙니다.
+  </div>
+
+  <!-- Input Bar -->
+  <div class="input-bar-wrap">
+    <div class="disclaimer-line">AI 생성 참고자료이며 투자 권유가 아닙니다</div>
+    <div class="input-bar">
+      <textarea class="chat-input" id="chatInput" placeholder="질문을 입력하세요..." rows="1"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13"/>
+        </svg>
+      </button>
     </div>
   </div>
 </div>
 
 <script>
-let selectedStyle = 'both';
+// ── State ──
+let opts = { market: 'us', style: 'both' };
 let activeFactors = new Set(['geo','macro','fundamental','sentiment','technical']);
+let chatHistory = []; // {role, content} for API
+let isLoading = false;
 
-function setPill(style) {
-  selectedStyle = style;
-  ['both','long','swing'].forEach(s => {
-    document.getElementById('pill-' + s).className = 'pill' + (s === style ? ' active' : '');
-  });
+// ── Options ──
+function setOpt(group, el) {
+  document.querySelectorAll(`.pill[data-group="${group}"]`).forEach(p => p.className = 'pill');
+  el.className = 'pill active';
+  opts[group] = el.dataset.val;
 }
 
-function togglePill(factor) {
-  const el = document.getElementById('pill-' + factor);
-  if (activeFactors.has(factor)) {
-    activeFactors.delete(factor);
+function toggleFactor(el) {
+  const f = el.dataset.factor;
+  if (activeFactors.has(f)) {
+    activeFactors.delete(f);
     el.className = 'pill';
   } else {
-    activeFactors.add(factor);
+    activeFactors.add(f);
     el.className = 'pill active-green';
   }
 }
 
-function setStep(stepNum, status) {
-  for (let i = 1; i <= 5; i++) {
-    const el = document.getElementById('step' + i);
-    el.className = 'step' + (i < stepNum ? ' done' : i === stepNum ? ' active' : '');
+// ── Chat ──
+const chatArea = document.getElementById('chatArea');
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+
+// Auto-resize textarea
+chatInput.addEventListener('input', () => {
+  chatInput.style.height = 'auto';
+  chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+});
+
+// Enter to send, Shift+Enter for newline
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
   }
+});
+
+function useHint(el) {
+  chatInput.value = el.textContent;
+  chatInput.focus();
+  sendMessage();
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function resetChat() {
+  chatHistory = [];
+  chatArea.innerHTML = `
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">
+        <svg width="48" height="48" viewBox="0 0 20 20" fill="none" style="opacity:0.5">
+          <polyline points="2,14 6,8 10,11 14,5 18,7" stroke="#00d4ff" stroke-width="1" fill="none"/>
+          <circle cx="18" cy="7" r="1.5" fill="#00d4ff"/>
+        </svg>
+      </div>
+      <h2>SIGNAL AI</h2>
+      <p>옵션을 설정하고 질문하세요. 냉정한 팩트 기반 분석으로 당신의 투자 가정을 검증합니다.</p>
+      <div class="welcome-hints">
+        <div class="hint-chip" onclick="useHint(this)">반도체 섹터에서 지금 매력적인 종목 추천해줘</div>
+        <div class="hint-chip" onclick="useHint(this)">엔비디아 지금 들어가도 돼?</div>
+        <div class="hint-chip" onclick="useHint(this)">무역전쟁 리스크 고려해서 방어적 포트폴리오 짜줘</div>
+        <div class="hint-chip" onclick="useHint(this)">AI 관련주 장기투자 종목 3개 골라줘</div>
+      </div>
+    </div>`;
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+  isLoading = false;
+  sendBtn.disabled = false;
+}
 
-async function startAnalysis() {
-  const query = document.getElementById('queryInput').value.trim();
-  if (!query) {
-    alert('분석할 내용을 입력해주세요.');
-    return;
-  }
+function addUserMsg(text) {
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
 
-  const btn = document.getElementById('analyzeBtn');
-  btn.disabled = true;
-  btn.textContent = '분석 중...';
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.innerHTML = `<div class="msg-bubble">${escapeHtml(text)}</div>`;
+  chatArea.appendChild(div);
+  scrollToBottom();
+}
 
-  document.getElementById('progressSection').style.display = 'block';
-  document.getElementById('resultSection').style.display = 'none';
-  document.getElementById('scoreGrid').innerHTML = '';
-  document.getElementById('mainResultContent').innerHTML = '';
+function addTypingIndicator() {
+  const div = document.createElement('div');
+  div.className = 'typing';
+  div.id = 'typingIndicator';
+  div.innerHTML = `<div class="dots"><span></span><span></span><span></span></div>`;
+  chatArea.appendChild(div);
+  scrollToBottom();
+}
 
-  setStep(1, 'active');
+function removeTypingIndicator() {
+  const el = document.getElementById('typingIndicator');
+  if (el) el.remove();
+}
 
-  const factorList = [...activeFactors].join(', ');
+function addAiMsg(text, provider, isFirst) {
+  const div = document.createElement('div');
+  div.className = 'msg ai';
 
-  try {
-    // Step animation
-    const stepPromise = (async () => {
-      await sleep(600); setStep(2, 'active');
-      await sleep(700); setStep(3, 'active');
-      await sleep(700); setStep(4, 'active');
-      await sleep(600); setStep(5, 'active');
-    })();
+  const providerLabel = provider === 'anthropic' ? 'Claude AI' : 'GPT-4o';
+  const tagClass = provider === 'anthropic' ? 'provider-tag' : 'provider-tag fallback';
 
-    const res = await fetch('/api/analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query,
-        style: selectedStyle,
-        factors: factorList,
-      })
-    });
+  // Parse scores if present
+  let scoresHtml = '';
+  let analysisText = text;
 
-    const data = await res.json();
-    await stepPromise;
-
-    if (data.error) {
-      throw new Error(data.error);
-    }
-
-    const fullText = data.result || '';
-    const provider = data.provider || 'unknown';
-
-    // Parse scores
-    const scoreMatch = fullText.match(/\[SCORES\]([\s\S]*?)\[\/SCORES\]/);
+  const scoreMatch = text.match(/\[SCORES\]([\s\S]*?)\[\/SCORES\]/);
+  if (scoreMatch) {
+    const s = scoreMatch[1];
     let risk = 50, timing = '보통', strategy = '분석중', confidence = '중간';
+    const riskM = s.match(/시장_위험도:\s*(\d+)/);
+    const timingM = s.match(/매수_타이밍:\s*(\S+)/);
+    const stratM = s.match(/전략:\s*(\S+)/);
+    const confM = s.match(/신뢰도:\s*(\S+)/);
+    if (riskM) risk = parseInt(riskM[1]);
+    if (timingM) timing = timingM[1];
+    if (stratM) strategy = stratM[1];
+    if (confM) confidence = confM[1];
 
-    if (scoreMatch) {
-      const s = scoreMatch[1];
-      const riskM = s.match(/시장_위험도:\s*(\d+)/);
-      const timingM = s.match(/매수_타이밍:\s*(\S+)/);
-      const stratM = s.match(/전략:\s*(\S+)/);
-      const confM = s.match(/신뢰도:\s*(\S+)/);
-      if (riskM) risk = parseInt(riskM[1]);
-      if (timingM) timing = timingM[1];
-      if (stratM) strategy = stratM[1];
-      if (confM) confidence = confM[1];
-    }
-
-    // Extract analysis part
-    const analysisMatch = fullText.match(/\[분석\]([\s\S]*?)(\[\/분석\]|$)/);
-    const analysisText = analysisMatch ? analysisMatch[1].trim() : fullText.replace(/\[SCORES\][\s\S]*?\[\/SCORES\]/, '').trim();
-
-    // Show results
-    document.getElementById('progressSection').style.display = 'none';
-    document.getElementById('resultSection').style.display = 'block';
-
-    // Score cards
     const riskClass = risk < 40 ? 'bull' : risk > 65 ? 'bear' : 'neutral';
     const timingClass = ['매우좋음','좋음'].includes(timing) ? 'bull' : ['나쁨','매우나쁨'].includes(timing) ? 'bear' : 'neutral';
     const stratClass = strategy.includes('장기') ? 'bull' : strategy.includes('관망') ? 'bear' : 'neutral';
     const confClass = confidence === '높음' ? 'bull' : confidence === '낮음' ? 'bear' : 'neutral';
 
-    document.getElementById('scoreGrid').innerHTML = `
-      <div class="score-card ${riskClass} fade-in">
-        <div class="score-label">시장 위험도</div>
-        <div class="score-value">${risk}</div>
-        <div class="score-sub">/100 · ${risk<40?'낮음':risk>65?'높음':'중간'}</div>
-      </div>
-      <div class="score-card ${timingClass} fade-in">
-        <div class="score-label">매수 타이밍</div>
-        <div class="score-value" style="font-size:20px;padding-top:4px">${timing}</div>
-        <div class="score-sub">현재 시점 평가</div>
-      </div>
-      <div class="score-card ${stratClass} fade-in">
-        <div class="score-label">추천 전략</div>
-        <div class="score-value" style="font-size:20px;padding-top:4px">${strategy}</div>
-        <div class="score-sub">AI 판단</div>
-      </div>
-      <div class="score-card ${confClass} fade-in">
-        <div class="score-label">분석 신뢰도</div>
-        <div class="score-value" style="font-size:20px;padding-top:4px">${confidence}</div>
-        <div class="score-sub">데이터 충분도</div>
-      </div>
-    `;
+    scoresHtml = `
+      <div class="score-grid">
+        <div class="score-card ${riskClass}">
+          <div class="score-label">Risk</div>
+          <div class="score-value">${risk}</div>
+          <div class="score-sub">${risk<40?'Low':risk>65?'High':'Mid'}</div>
+        </div>
+        <div class="score-card ${timingClass}">
+          <div class="score-label">Timing</div>
+          <div class="score-value" style="font-size:15px;padding-top:3px">${timing}</div>
+        </div>
+        <div class="score-card ${stratClass}">
+          <div class="score-label">Strategy</div>
+          <div class="score-value" style="font-size:15px;padding-top:3px">${strategy}</div>
+        </div>
+        <div class="score-card ${confClass}">
+          <div class="score-label">Confidence</div>
+          <div class="score-value" style="font-size:15px;padding-top:3px">${confidence}</div>
+        </div>
+      </div>`;
 
-    // Stream analysis text
-    const contentEl = document.getElementById('mainResultContent');
-    contentEl.innerHTML = '';
-    let i = 0;
-    const speed = 12; // ms per char
-
-    function streamChar() {
-      if (i < analysisText.length) {
-        const chunk = analysisText.slice(i, i + 3);
-        contentEl.textContent += chunk;
-        i += 3;
-        setTimeout(streamChar, speed);
-      }
-    }
-    streamChar();
-
-    // Show provider badge
-    const providerLabel = provider === 'anthropic' ? 'Claude AI' : 'GPT-4o (Fallback)';
-    const providerColor = provider === 'anthropic' ? 'var(--accent)' : 'var(--accent3)';
-    document.getElementById('mainResult').querySelector('.result-title').innerHTML =
-      `종합 분석 결과 <span style="margin-left:auto;font-size:9px;color:${providerColor};border:1px solid ${providerColor};padding:2px 8px;">powered by ${providerLabel}</span>`;
-
-    document.getElementById('resultSection').classList.add('fade-in');
-
-  } catch (err) {
-    document.getElementById('progressSection').style.display = 'none';
-    document.getElementById('resultSection').style.display = 'block';
-    document.getElementById('mainResultContent').textContent = '오류가 발생했습니다: ' + err.message;
+    const analysisMatch = text.match(/\[분석\]([\s\S]*?)(\[\/분석\]|$)/);
+    analysisText = analysisMatch ? analysisMatch[1].trim() : text.replace(/\[SCORES\][\s\S]*?\[\/SCORES\]/, '').trim();
   }
 
-  btn.disabled = false;
-  btn.textContent = '▶ SIGNAL 분석 시작';
+  div.innerHTML = `
+    <div class="msg-bubble">
+      <div class="${tagClass}"><span class="dot"></span>${providerLabel}</div>
+      ${scoresHtml}
+      <div class="ai-text"></div>
+    </div>`;
+
+  chatArea.appendChild(div);
+
+  // Stream text
+  const textEl = div.querySelector('.ai-text');
+  let i = 0;
+  const speed = 8;
+
+  function streamChar() {
+    if (i < analysisText.length) {
+      const chunk = analysisText.slice(i, i + 4);
+      textEl.textContent += chunk;
+      i += 4;
+      scrollToBottom();
+      setTimeout(streamChar, speed);
+    }
+  }
+  streamChar();
+  scrollToBottom();
+}
+
+function addErrorMsg(errText) {
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.innerHTML = `
+    <div class="msg-bubble" style="border-color:var(--red);">
+      <div style="color:var(--red);font-family:var(--mono);font-size:11px;margin-bottom:4px;">ERROR</div>
+      ${escapeHtml(errText)}
+    </div>`;
+  chatArea.appendChild(div);
+  scrollToBottom();
+}
+
+async function sendMessage() {
+  const text = chatInput.value.trim();
+  if (!text || isLoading) return;
+
+  isLoading = true;
+  sendBtn.disabled = true;
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+
+  addUserMsg(text);
+  chatHistory.push({ role: 'user', content: text });
+
+  addTypingIndicator();
+
+  const isFirst = chatHistory.filter(m => m.role === 'user').length === 1;
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: chatHistory,
+        market: opts.market,
+        style: opts.style,
+        factors: [...activeFactors].join(', '),
+        isFirst,
+      })
+    });
+
+    const data = await res.json();
+    removeTypingIndicator();
+
+    if (data.error) {
+      addErrorMsg(data.error);
+    } else {
+      const aiText = data.result || '';
+      chatHistory.push({ role: 'assistant', content: aiText });
+      addAiMsg(aiText, data.provider, isFirst);
+    }
+  } catch (err) {
+    removeTypingIndicator();
+    addErrorMsg('연결 오류: ' + err.message);
+  }
+
+  isLoading = false;
+  sendBtn.disabled = false;
+  chatInput.focus();
+}
+
+function scrollToBottom() {
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
 }
 </script>
 </body>
